@@ -1,0 +1,20 @@
+# Copyright 2012 Intel Corporation.
+#
+# This file is subject to the Intel Sample Source Code License. A copy
+# of the Intel Sample Source Code License is included.
+
+EXTRA_CFLAGS += $(CFLAGS) -Wall -Werror -Wextra
+EXTRA_LDFLAGS = $(LDFLAGS) -lscif -lmicmgmt
+INCDIR=-I.
+
+all:	examples example_version
+
+examples:	examples.c
+	$(CC) $(EXTRA_CFLAGS) $(INCDIR) $^ -o $@ $(EXTRA_LDFLAGS)
+
+example_version:	example_version.c
+	$(CC) $(EXTRA_CFLAGS) $(INCDIR) $^ -o $@ $(EXTRA_LDFLAGS)
+
+clean:
+	$(RM) *.o examples example_version
+

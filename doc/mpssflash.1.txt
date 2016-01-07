@@ -1,0 +1,290 @@
+// Copyright 2010-2013 Intel Corporation.
+//
+// This library is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, version 2.1.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// Disclaimer: The codes contained in these modules may be specific
+// to the Intel Software Development Platform codenamed Knights Ferry,
+// and the Intel product codenamed Knights Corner, and are not backward
+// compatible with other Intel products. Additionally, Intel will NOT
+// support the codes or instruction set in future products.
+//
+// Intel offers no warranty of any kind regarding the code. This code is
+// licensed on an "AS IS" basis and Intel is not obligated to provide
+// any support, assistance, installation, training, or other services
+// of any kind. Intel is also not obligated to provide any updates,
+// enhancements or extensions. Intel specifically disclaims any warranty
+// of merchantability, non-infringement, fitness for any particular
+// purpose, and any other warranty.
+//
+// Further, Intel disclaims all liability of any kind, including but
+// not limited to liability for infringement of any proprietary rights,
+// relating to the use of the code, even if Intel is notified of the
+// possibility of such liability. Except as expressly stated in an Intel
+// license agreement provided with this code and agreed upon with Intel,
+// no license, express or implied, by estoppel or otherwise, to any
+// intellectual property rights is granted herein.
+
+MPSSFLASH(1)
+============
+
+NAME
+----
+mpssflash - A tool to update Flash memory and System Management Controller
+firmware on Intel(R) Xeon Phi(TM) coprocessors.
+
+SYNOPSIS
+--------
+*mpssflash* 'OPTIONS'
+
+////
+This is an asciiDoc formatted file, used to create manpage entries for the mpssflash utility.
+In order for a2x to correctly convert this file into man-page format, there can not be
+anything other than:
+TITLE
+NAME
+SYNOPSIS
+as the first three sections of this file.  (That's why the comments have been placed
+here.)
+
+In order to convert this file into man-page format (ie. a file that can be read by 'man')
+run the following command:
+
+a2x --doctype manpage --format manpage <fileName>
+
+where <fileName> is the name of this file (it should be mpssflash.1.txt).
+
+This file contains information that is for internal use only.  This information is
+excluded from the created manpage by default.  To include it, set ODM_TOOL_INTERNAL.
+////
+
+
+DESCRIPTION
+-----------
+ifdef::ODM_TOOL_INTERNAL[]
+This document describes the 'Intel Internal' version of *mpssflash(1)*, and *IS 
+NOT FOR EXTERNAL RELEASE*.
+
+
+endif::ODM_TOOL_INTERNAL[]
+*mpssflash* is a tool to query the state of flash memory on Intel(R) Xeon
+Phi(TM) coprocessors (also known as Many Integrated Core or MIC), and update its 
+contents as well as the firmware of onboard System Management Controller (SMC).
+
+*mpssflash update* +
+
+Flash memory and SMC firmware contents may be modified by using the *update*
+command. This command must be run when the device is in the ready state. The 
+*micctrl* command may be used to put the device into the ready state prior to 
+issuing the update request:
+....
+# micctrl -r [device]
+# micctrl -w [device]
+mic0: ready
+....
+
+The action depends on the content of the image file that is passed with
+the *<file>* argument, or selected by the rules specified later in this 
+document. If the file contains two images (Flash and SMC firmware), then both 
+updates are attempted. Otherwise, only the available image is updated. Note that 
+the files are usually saved with *.rom* extension for Flash-only images, *.smc* 
+for SMC firmware, and *.rom.smc* for both.
+
+The *--device* argument may be used to specify a single device ID, a 
+comma-separated list of device IDs, or *all* to denote all MIC devices present 
+on the system. This option may be omitted on a single-card system, in which case 
+the only available device is used.
+
+Note: The behavior of prompting for reboot at the end of a successful update is 
+now discontinued. The reason is that a flash update requires a cold boot, but a 
+warm-reboot may have been specified as a boot parameter.
+
+For SMC firmware versions 1.7 and earlier, an SMC boot loader update is 
+necessary. Use the *--smcbootloader* option with the update command to update the 
+SMC boot loader, in addition to the SMC image.  If *--smcbootloader* is 
+specified on the command line of a flash update operation, then *mpssflash* 
+will first look for the highest compatible version of the SMC boot loader image 
+in the */usr/share/mpss/flash* directory.  If no such image is found, then the 
+operation will fail.  If the operation is successful, then *mpssflash* will 
+attempt to use one of the following (in order):
+
+. A compatible flash and SMC image (*.rom.smc* extension) in 
+*/usr/share/mpss/flash* if no path or file were specified in the update command
+. A compatible flash and SMC image in the directory specified in the update 
+command
+. The file specified in the update command after checking its compatibility
+
+Note that the compatibility check may be skipped to allow a user to perform an 
+SMC firmware upgrade alone (without flash upgrade), along with the SMC boot 
+loader modification.  However, the user should make sure the SMC image is 
+actually compatible with the device as there may be no way for *mpssflash* to 
+determine if the given image is compatible.
+
+If any of these operations fail, then the update will fail and the SMC boot 
+loader will not be modified.  Otherwise, the SMC boot loader will be modified 
+first, followed by an update of the flash and/or SMC images.
+
+*mpssflash version* +
+
+This command may be used to display the flash firmware version that is currently 
+present on the installed device(s), or from an image file. When reading physical 
+flash, this command must be executed with the specified devices in the ready 
+state. In this case, the device is first put into maintenance mode, the flash is 
+read, and finally reset back to the ready state.
+
+OPTIONS
+-------
+*--help,-h* [update|version|read|device|check]::
+  Describe usage of mpssflash.  If a topic is specified, describe only that 
+  topic, otherwise describe all topics.
+
+*update* [{--device|-d} {'<device>'|'<device-list>'|all}] {--file|-f} '<file>' [--smcbootloader] [{--force|-F}] ::
+  Update the Intel(R) Xeon Phi(TM) coprocessor flash with the given flash image file. +
+  *--device,-d* ::: '<device>' gives the numeric ID of the device on which the 
+                specified operation must be performed. If this option is not 
+                specified, then a device ID of 0 is implied on a single-card 
+                system, and an error is reported on multi-card machines. A list 
+                of devices ('<device-list>') may be specified using comma- 
+                separated numeric values, e.g.: --device 0,3,0x5.
+                Finally, 'all' specifies all available devices.
+  *--file,-f* '<file>' ::: '<file>' gives the image file to be used to update 
+                the flash.
+  *--smcbootloader* ::: Update the SMC boot loader in addition to the SMC image.
+                An SMC boot loader update is necessary for SMC firmware versions 
+                1.7 and earlier.
+  *--force,-F* ::: This option disables the firmware version compatibility 
+                check.
+
+*version* [{--device|-d} {<device>|<device-list>|all}] {--file|-f} '<file>' ::
+  Get the version of the flash image from the specified file, or from the specified 
+  device. + 
+  *--device,-d* ::: '<device>' gives the numeric ID of the device on which the 
+                specified operation must be performed. If this option is not 
+                specified, then a device ID of 0 is implied on a single-card 
+                system, and an error is reported on multi-card machines. A list 
+                of devices ('<device-list>') may be specified using comma- 
+                separated numeric values, e.g.: --device 0,3,0x5.
+                Finally, 'all' specifies all available devices.
+  *--file,-f* '<file>' ::: When *--file* is specified, the version is read from 
+                the image file given in '<file>'.
+
+*read* [{--device|-d} <device>] {--file|-f} '<file>' ::
+  Save the flash image from the given device into the specified file. +
+  *--device,-d* ::: '<device>' gives the numeric ID of the device on which the 
+                specified operation must be performed. If this option is not 
+                specified, then a device ID of 0 is implied on a single-card 
+                system, and an error is reported on multi-card machines.
+  *--file,-f* '<file>' ::: The contents of the flash are stored in the file 
+                given in '<file>'.
+
+*device* [{--device|-d} {<device>|<device-list>|all}] ::
+  Get the flash device vendor information. +
+  *--device,-d* ::: '<device>' gives the numeric ID of the device on which the 
+                specified operation must be performed. If this option is not 
+                specified, then a device ID of 0 is implied on a single-card 
+                system, and an error is reported on multi-card machines. A list 
+                of devices ('<device-list>') may be specified using comma- 
+                separated numeric values, e.g.: --device 0,3,0x5.
+                Finally, 'all' specifies all available devices.
+
+*check* [{--device|-d} {<device>|<device-list>|all}] {--file|-f} '<file>' ::
+  Check if the specified flash image is compatible with the given device. +
+  *--device,-d* ::: '<device>' gives the numeric ID of the device on which the 
+                specified operation must be performed. If this option is not 
+                specified, then a device ID of 0 is implied on a single-card 
+                system, and an error is reported on multi-card machines. A list 
+                of devices ('<device-list>') may be specified using comma-
+                separated numeric values, e.g.: --device 0,3,0x5.
+                Finally, 'all' specifies all available devices.
+  *--file,-f* '<file>' ::: The file given in '<file>' is checked for 
+                compatibility with the device(s) specified in *--device*.
+
+EXAMPLES
+--------
+//The equals signs auto create 'Example n.' in the manpage output.
+.Updating the flash
+======
+......
+# ./mpssflash update --device 0 --file /usr/share/mpss/flash/EXT_HP2_B0_0375-02.rom
+
+mic0: Flash read in progress
+mic0: Flash read successful
+mic0: Flash update in progress
+mic0: Flash update successful
+mic0: Resetting
+
+#
+......
+=====
+//End Ex. 1
+
+.Getting version information
+=====
+......
+# mpssflash version --device all 
+
+mic0: Version: 2.1.02.0375 
+
+mic1: Version: 2.1.02.0375 
+
+#
+......
+The flash version may also be obtained from an image file:
+......
+# mpssflash version --file /usr/share/mpss/flash/EXT_HP2_A0_0375-02.rom.smc 
+
+2.1.02.0375
+
+#
+......
+
+=====
+//End Ex. 2
+
+EXIT STATUS
+-----------
+*mpssflash* exits with status 0 if the operation succeeds on all specified 
+devices, otherwise it returns with a non-zero status.
+
+PERMISSIONS
+-----------
+Flash operations require super-user privileges.
+
+CAVEATS
+-------
+For SMC firmware versions 1.7 and earlier, an SMC boot loader update is 
+necessary. Use the *--smcbootloader* option with the update command to update the 
+SMC boot loader in addition to the SMC image.
+
+BUGS
+----
+A section for known bugs, and possible workarounds: ::
+  No bugs listed so far.
+
+
+AUTHOR
+------
+*mpssflash(1)* was written by Intel for use with Intel(R) Xeon Phi(TM) coprocessors
+
+
+RESOURCES
+---------
+A list of other useful resources: ::
+  None so far.
+
+
+COPYRIGHT
+---------
+Copyright 2011-2015 Intel Corporation. All Rights Reserved.
+
+
+SEE ALSO
+--------
+*micinfo(1)*, *micsmc(1)*, *miccheck(1)*, *micflash(1)*, *mpssinfo(1)*
+

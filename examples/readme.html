@@ -1,0 +1,1455 @@
+<!-- Copyright 2010-2013 Intel Corporation.
+<!--
+<!-- This library is free software; you can redistribute it and/or modify it
+<!-- under the terms of the GNU Lesser General Public License as published
+<!-- by the Free Software Foundation, version 2.1.
+<!--
+<!-- This library is distributed in the hope that it will be useful,
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+<!-- Lesser General Public License for more details.
+<!--
+<!-- Disclaimer: The codes contained in these modules may be specific
+<!-- to the Intel Software Development Platform codenamed Knights Ferry,
+<!-- and the Intel product codenamed Knights Corner, and are not backward
+<!-- compatible with other Intel products. Additionally, Intel will NOT
+<!-- support the codes or instruction set in future products.
+<!--
+<!-- Intel offers no warranty of any kind regarding the code. This code is
+<!-- licensed on an "AS IS" basis and Intel is not obligated to provide
+<!-- any support, assistance, installation, training, or other services
+<!-- of any kind. Intel is also not obligated to provide any updates,
+<!-- enhancements or extensions. Intel specifically disclaims any warranty
+<!-- of merchantability, non-infringement, fitness for any particular
+<!-- purpose, and any other warranty.
+<!--
+<!-- Further, Intel disclaims all liability of any kind, including but
+<!-- not limited to liability for infringement of any proprietary rights,
+<!-- relating to the use of the code, even if Intel is notified of the
+<!-- possibility of such liability. Except as expressly stated in an Intel
+<!-- license agreement provided with this code and agreed upon with Intel,
+<!-- no license, express or implied, by estoppel or otherwise, to any
+<!-- intellectual property rights is granted herein.
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.6.7" />
+<title>MicMgmtAPI Guide (A.K.A MicAccessAPI Guide)</title>
+<style type="text/css">
+/* Shared CSS for AsciiDoc xhtml11 and html5 backends */
+
+/* Default font. */
+body {
+  font-family: Georgia,serif;
+}
+
+/* Title font. */
+h1, h2, h3, h4, h5, h6,
+div.title, caption.title,
+thead, p.table.header,
+#toctitle,
+#author, #revnumber, #revdate, #revremark,
+#footer {
+  font-family: Arial,Helvetica,sans-serif;
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+h5 {
+  font-size: 1.0em;
+}
+
+div.sectionbody {
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+ul > li     { color: #aaa; }
+ul > li > * { color: black; }
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+#author {
+  color: #527bbd;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+#email {
+}
+#revnumber, #revdate, #revremark {
+}
+
+#footer {
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid #dddddd;
+  border-left: 4px solid #f0f0f0;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid #dddddd;
+  border-left: 5px solid #f0f0f0;
+  background: #f8f8f8;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #f0f0f0;
+  color: #888;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > pre.content {
+  font-family: inherit;
+  font-size: inherit;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+div.colist td {
+  padding-right: 0.5em;
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+div.colist td img {
+  margin-top: 0.3em;
+}
+
+@media print {
+  #footer-badges { display: none; }
+}
+
+#toc {
+  margin-bottom: 2.5em;
+}
+
+#toctitle {
+  color: #527bbd;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel0, div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+
+span.aqua { color: aqua; }
+span.black { color: black; }
+span.blue { color: blue; }
+span.fuchsia { color: fuchsia; }
+span.gray { color: gray; }
+span.green { color: green; }
+span.lime { color: lime; }
+span.maroon { color: maroon; }
+span.navy { color: navy; }
+span.olive { color: olive; }
+span.purple { color: purple; }
+span.red { color: red; }
+span.silver { color: silver; }
+span.teal { color: teal; }
+span.white { color: white; }
+span.yellow { color: yellow; }
+
+span.aqua-background { background: aqua; }
+span.black-background { background: black; }
+span.blue-background { background: blue; }
+span.fuchsia-background { background: fuchsia; }
+span.gray-background { background: gray; }
+span.green-background { background: green; }
+span.lime-background { background: lime; }
+span.maroon-background { background: maroon; }
+span.navy-background { background: navy; }
+span.olive-background { background: olive; }
+span.purple-background { background: purple; }
+span.red-background { background: red; }
+span.silver-background { background: silver; }
+span.teal-background { background: teal; }
+span.white-background { background: white; }
+span.yellow-background { background: yellow; }
+
+span.big { font-size: 2em; }
+span.small { font-size: 0.6em; }
+
+span.underline { text-decoration: underline; }
+span.overline { text-decoration: overline; }
+span.line-through { text-decoration: line-through; }
+
+div.unbreakable { page-break-inside: avoid; }
+
+
+/*
+ * xhtml11 specific
+ *
+ * */
+
+tt {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+div.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+/*
+ * html5 specific
+ *
+ * */
+
+.monospaced {
+  font-family: "Courier New", Courier, monospace;
+  font-size: inherit;
+  color: navy;
+}
+
+table.tableblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+thead, p.tableblock.header {
+  font-weight: bold;
+  color: #527bbd;
+}
+p.tableblock {
+  margin-top: 0;
+}
+table.tableblock {
+  border-width: 3px;
+  border-spacing: 0px;
+  border-style: solid;
+  border-color: #527bbd;
+  border-collapse: collapse;
+}
+th.tableblock, td.tableblock {
+  border-width: 1px;
+  padding: 4px;
+  border-style: solid;
+  border-color: #527bbd;
+}
+
+table.tableblock.frame-topbot {
+  border-left-style: hidden;
+  border-right-style: hidden;
+}
+table.tableblock.frame-sides {
+  border-top-style: hidden;
+  border-bottom-style: hidden;
+}
+table.tableblock.frame-none {
+  border-style: hidden;
+}
+
+th.tableblock.halign-left, td.tableblock.halign-left {
+  text-align: left;
+}
+th.tableblock.halign-center, td.tableblock.halign-center {
+  text-align: center;
+}
+th.tableblock.halign-right, td.tableblock.halign-right {
+  text-align: right;
+}
+
+th.tableblock.valign-top, td.tableblock.valign-top {
+  vertical-align: top;
+}
+th.tableblock.valign-middle, td.tableblock.valign-middle {
+  vertical-align: middle;
+}
+th.tableblock.valign-bottom, td.tableblock.valign-bottom {
+  vertical-align: bottom;
+}
+
+
+/*
+ * manpage specific
+ *
+ * */
+
+body.manpage h1 {
+  padding-top: 0.5em;
+  padding-bottom: 0.5em;
+  border-top: 2px solid silver;
+  border-bottom: 2px solid silver;
+}
+body.manpage h2 {
+  border-style: none;
+}
+body.manpage div.sectionbody {
+  margin-left: 3em;
+}
+
+@media print {
+  body.manpage div#toc { display: none; }
+}
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([1-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName.toLowerCase() == 'div' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install();
+/*]]>*/
+</script>
+</head>
+<body class="article">
+<div id="header">
+<h1>MicMgmtAPI Guide (A.K.A MicAccessAPI Guide)</h1>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph"><p>MicMgmt sdk library is bundled as part of <strong>micmgmt</strong> binaries and it is
+built from the open source package intel-mic-micmgmt-2.1.xxxx-src.rpm.
+This package is built for our external customers or cluster ISVs to aid in
+developing custom cluster functionality to programmatically access and
+control some of the hardware registers and parameters of the MIC
+family of cards. Some of the available APIs allow such operations as to
+monitor the voltage and temperature sensor readings on the card,
+control related thresholds and limits, or get information about cores
+and memory.
+Note: The micmgmt sdk is a re-write of MicAccessAPI sdk package, which was
+released in intel-mic-sysmgmt-devel-2.1.xxxx.rpm package in previous
+releases. MicAccessAPI sdk library will not be supported from June 2013.
+All the standard functionalities in MicAccessAPI will be supported
+in the micmgmt sdk library.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>micmgmt sdk library (<em>libmicmgmt.so</em>) is a C/C++ library that allows
+programmatic access to internal control and status registers of the MIC
+cards. It also allows communication with other agents, such as
+System Management Controller if present on the card. The library is in
+turn dependent on <em>libscif.so</em> that&#8217;s required in order to be able to
+connect and communicate with the kernel components of our software stack.
+Please note that <em>libscif.so</em> is installed as part of our <em>rpm</em> packages.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_getting_started">Getting Started</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Please make sure that you have a C compiler installed. This library has
+been tested with <em>gcc version 4.4.4 20100726 (Red Hat 4.4.4-13)</em> but
+should work with other versions of C compiler too. In order to use the
+sdk  install intel-mic-mgmt-2.1.xxxx.rpm, then change directory to
+<em>/opt/intel/mic/mgmt/sdk/exampes/</em> and run <em>make</em> to compile the
+example source code files.</p></div>
+<div class="paragraph"><p>Writing Your Own Programs with MicMgmt</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>Initial steps
+~~~~~~~~~~~~~~
+
+Step 1: Discover all the mic cards in the system using the following APIs
+        mic_get_devices() and mic_get_ndevices().
+
+        example:
+        struct mic_devices_list *mdl;
+        ncards = 0;
+        mic_get_devices(&amp;mdl); //list of all the mic devices
+        mic_get_ndevices(mdl, &amp;ncards); //number of mic devices found
+        mic_free_devices(mdl); // to free the device list
+
+Step 2: Identify your mic device using the mic_get_device_at_index() API
+
+        example:
+        index = 0;
+        card;
+        for (index=0; index &lt;ncards; index++)
+        {
+                mic_get_device_at_index(mdl, index, &amp;card);
+                printf ("mic%d\n", card); *** mic0, mic1, mic2,...
+        }
+
+Step 3: Choose a individual mic device to talk to using mic_open_device()
+        API call.
+
+        example:
+        card = 0;
+        struct mic_device *mdh;
+        mic_open_device(&amp;mdh, card);
+        ....call apis using mdh
+        ....
+        mic_close_device(mdh);
+
+Step 4: Call an API on the specific mic device from the library.
+
+        example:
+        card = 0;
+        struct mic_device *mdh;
+        struct mic_version_info *version;
+        char uos_version[NAME_MAX];
+        char flash_version[NAME_MAX];
+        size_t size = NAME_MAX;
+
+        mic_open_device(&amp;mdh, card);
+        mic_get_version_info(mdh, &amp;version);
+
+        /* Coprocessor OS version example */
+        mic_get_uos_version(version, uos_version, &amp;size);
+        printf("Coprocessor OS Version :%s\n", uos_version);
+
+        /* Flash version example */
+        mic_get_flash_version(version, flash_version, &amp;size);
+        printf("Flash Version :%s\n", flash_version);
+
+        mic_free_version_info(version); **** release the memory allocated
+                                             for version information
+        mic_close_device(mdh);</tt></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_example_makefile">Example Makefile</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The included makefile <em>examples/Makefile</em>, whose contents are listed below, may be
+used to compile this program.</p></div>
+<div class="paragraph"><p>Please make sure that libmicmgmt.so is in the PATH before executing the test.
+If the library was not installed to /usr/lib or usr/lib64 consider moving it
+there manually or adding it to LD_LIBRARY_PATH.</p></div>
+<div class="paragraph"><p>Example: export set LD_LIBRARY_PATH="/opt/intel/mic/micmgmt/sdk/lib".</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>LIBPATH += -L../miclib/libs
+
+EXTRA_LDFLAGS = $(LDFLAGS) $(LIBPATH) -lscif -lmicmgmt
+
+INCDIR=-I../include -I../miclib/include -I.
+
+MAIN_SRCS=examples.c example_version.c
+
+HEADERS=
+
+MAIN_OBJS=$(MAIN_SRCS:.c=.o)
+
+MAIN_EXEC=$(MAIN_SRCS:.c=)</tt></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_example_code">Example Code</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Example code provided with <strong>micmgmt</strong> binaries is a good starting powhen
+first writing programs that use the <em>micmgmt</em> library. A very simple example
+code is shown below to get the number of MIC cards in the machine and to get
+the device name.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>#include &lt;stdio.h&gt;
+#include &lt;errno.h&gt;
+#include &lt;string.h&gt;
+#include "miclib.h"
+
+main(void)
+{
+        int ncards, card_num, card;
+        struct mic_devices_list *mdl;
+        struct mic_device *mdh;
+        uint32_t device_type;
+        if (mic_get_devices(&amp;mdl) != E_MIC_SUCCESS) {
+                fprintf(stderr, "Failed to get cards list: %s: %s\n",
+                        mic_get_error_string(), strerror(errno));
+                return 1;
+        }
+
+        if (mic_get_ndevices(mdl, &amp;ncards) != E_MIC_SUCCESS) {
+                fprintf(stderr, "Failed to get number of cards: %s: %s\n",
+                        mic_get_error_string(), strerror(errno));
+                (void)mic_free_devices(mdl);
+                return 2;
+        }
+        printf("\tNumber of cards : %d\n", ncards);
+        if (ncards == 0) {
+                fprintf(stderr, "No MIC card found\n");
+                (void)mic_free_devices(mdl);
+                return 3;
+        }
+
+        /* Get card at index 0 */
+        card_num = 0;
+        if (mic_get_device_at_index(mdl, card_num, &amp;card) != E_MIC_SUCCESS) {
+                fprintf(stderr, "Failed to get card at index %d: %s: %s\n",
+                        card_num, mic_get_error_string(), strerror(errno));
+                mic_free_devices(mdl);
+                return 4;
+        }
+
+        (void)mic_free_devices(mdl);
+        if (mic_open_device(&amp;mdh, card) != E_MIC_SUCCESS) {
+                fprintf(stderr, "Failed to open card %d: %s: %s\n",
+                        card_num, mic_get_error_string(), strerror(errno));
+                return 5;
+        }
+
+        if (mic_get_device_type(mdh, &amp;device_type) != E_MIC_SUCCESS) {
+                fprintf(stderr, "%s: Failed to get device type: %s: %s\n",
+                        mic_get_device_name(mdh),
+                        mic_get_error_string(), strerror(errno));
+                (void)mic_close_device(mdh);
+                return 6;
+        }
+
+        if (device_type != KNC_ID) {
+                fprintf(stderr, "Unknown device Type: %u\n", device_type);
+                (void)mic_close_device(mdh);
+                return 7;
+        }
+        printf("        Found KNC device '%s'\n", mic_get_device_name(mdh));
+
+        (void)mic_close_device(mdh);
+        return 0;
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>Note that the above calls will initialize and open the device. We can call
+several other APIs to get specific information by using this open device.
+We will start with a simple example. In the example below, we have populateda data structure for PCIe metrics.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>get_pcie_info(struct mic_device *mdh)
+{
+        struct mic_pci_config *pcfg;
+        /* PCI config examples */
+        printf("PCI Config Examples : \n\n");
+        if (mic_get_pci_config(mdh, &amp;pcfg) != E_MIC_SUCCESS)
+        {
+                fprintf(stderr, "%s: Failed to get PCI configuration "
+                        "information: %s: %s\n", mic_get_device_name(mdh),
+                        mic_get_error_string(), strerror(errno));
+                return 1;
+        }
+
+        (void)mic_free_pci_config(pcfg);
+        return 0;
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>Once we get the pci_config by making a call to "mic_get_pci_config", we
+can derive more PCIe characteristics by calling the corresponding APIs that
+retrieve specific information. The following sections will contain code
+snippets to return specific device information.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_memory_info_example">Memory Info Example</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Header File for the API: miclib.h</p></div>
+<div class="paragraph"><p>This snippet will return the "Total memory available on the device".</p></div>
+<div class="paragraph"><p>Data Structure Used: mic_device_mem</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>do_memory_examples(struct mic_device *mdh)
+{
+        struct mic_device_mem *minfo;
+        uint32_t msize;
+
+        /* Memory device examples */
+        printf("Memory API Examples : \n\n");
+        if (mic_get_memory_info(mdh, &amp;minfo) != E_MIC_SUCCESS) {
+                fprintf(stderr, "%s: Failed to get memory "
+                        "information: %s: %s\n", mic_get_device_name(mdh),
+                        mic_get_error_string(), strerror(errno));
+                return 1;
+        }
+        if (mic_get_memory_size(minfo, &amp;msize) != E_MIC_SUCCESS) {
+                fprintf(stderr, "%s: Failed to get memory size: "
+                        "%s: %s\n", mic_get_device_name(mdh),
+                        mic_get_error_string(), strerror(errno));
+                (void)mic_free_memory_info(minfo);
+                return 2;
+        }
+        printf("        Memory size: %u KBytes\n", msize);
+        (void)mic_free_memory_info(minfo);
+        return 0;
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>More APIs can be called within the same function before the call to free "minfo".
+More examples are available on the examples.c source file.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_die_temperature_readings_api_example">Die Temperature Readings API Example</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Header File for the API: miclib.h</p></div>
+<div class="paragraph"><p>This snippet will return the "Die Temperature" of the MIC device.</p></div>
+<div class="paragraph"><p>Data Structure Used: mic_device_mem</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>do_thermal_examples(struct mic_device *mdh)
+{
+        struct mic_thermal_info *tinfo;
+        uint32_t dtemp;
+
+        if (mic_get_thermal_info(mdh, &amp;tinfo) != E_MIC_SUCCESS) {
+                fprintf(stderr, "%s: Failed to get thermal information: %s: %s\n",
+                                mic_get_device_name(mdh),
+                                mic_get_error_string(),
+                                strerror(errno));
+                return 1;
+        }
+        if (mic_get_die_temp(tinfo, &amp;dtemp) != E_MIC_SUCCESS)
+        {
+                fprintf(stderr, "%s: Failed to get die temperature : %s: %s\n",
+                                mic_get_device_name(mdh),
+                                mic_get_error_string(),
+                                strerror(errno));
+                (void)mic_free_thermal_info(tinfo);
+                return 5;
+        }
+        printf("        Die Temperature : %uC\n", dtemp);
+        (void)mic_free_thermal_info(tinfo);
+        return 0;
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>More APIs can be called within the same function before the call to free "tinfo".
+More examples are available on the examples.c source file.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_power_consumption_examples">Power consumption Examples</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Header File for the API: miclib.h</p></div>
+<div class="paragraph"><p>This snippet will return the all the core, uncore, and memory subsystem rail power.</p></div>
+<div class="paragraph"><p>Data Structure Used: mic_power_util_info</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>do_power_examples(struct mic_device *mdh)
+{
+        struct mic_power_util_info *pinfo;
+        uint32_t pwr;
+
+        /* Power utilization examples */
+        printf("Power utilization Examples : \n\n");
+        if (mic_get_power_utilization_info(mdh, &amp;pinfo) != E_MIC_SUCCESS) {
+                fprintf(stderr, "%s: Failed to get power utilization information: %s: %s\n",
+                                mic_get_device_name(mdh),
+                                mic_get_error_string(),
+                                strerror(errno));
+                return 1;
+        }
+
+        if(mic_get_vccp_power_readings(pinfo, &amp;pwr) != E_MIC_SUCCESS)
+        {
+                fprintf(stderr, "%s: Failed to get vccp(core rail) power readings: %s: %s\n",
+                                mic_get_device_name(mdh),
+                                mic_get_error_string(),
+                                strerror(errno));
+                (void)mic_free_power_utilization_info(pinfo);
+                return 2;
+        }
+        printf("        Vccp(core rail) power reading : %u watts\n", pwr/1000000);
+
+        if(mic_get_vddg_power_readings(pinfo, &amp;pwr) != E_MIC_SUCCESS)
+        {
+                fprintf(stderr, "%s: Failed to get vddg(uncore rail) power readings: %s: %s\n",
+                                mic_get_device_name(mdh),
+                                mic_get_error_string(),
+                                strerror(errno));
+                (void)mic_free_power_utilization_info(pinfo);
+                return 3;
+        }
+        printf("        Vddg(uncore rail) power reading : %u watts\n", pwr/1000000);
+
+        if(mic_get_vddq_power_readings(pinfo, &amp;pwr) != E_MIC_SUCCESS)
+        {
+                fprintf(stderr, "%s: Failed to get vddq(Memory subsystem rail) power readings: %s: %s\n",
+                                mic_get_device_name(mdh),
+                                mic_get_error_string(),
+                                strerror(errno));
+                (void)mic_free_power_utilization_info(pinfo);
+                return 4;
+        }
+        printf("        Vddq(Memory subsystem rail) power reading : %u watts\n", pwr/1000000);
+
+        (void)mic_free_power_utilization_info(pinfo);
+        return 0;
+}</tt></pre>
+</div></div>
+<div class="paragraph"><p>More APIs can be called within the same function before the call to free "pinfo".
+More examples are available on the examples.c source file.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_uos_version_retrieving_api_example">Coprocessor OS Version Retrieving API Example</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Header File for the API: miclib.h</p></div>
+<div class="paragraph"><p>This snippet will return the all version information.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>Data Structure Used: mic_version_info
+main()
+{
+        struct mic_devices_list *dev_list=NULL;
+        struct mic_device *mdh = NULL;
+        struct mic_version_info *version=NULL;
+        ndevices=0;
+        indx=0;
+        card=0;
+        ret = 0;
+        char str[NAME_MAX];
+        size_t size = NAME_MAX;
+
+        if( mic_get_devices(&amp;dev_list) != E_MIC_SUCCESS )
+        {
+                error_msg_start("No devices found : %s: %s\n",
+                         mic_get_error_string(), strerror(errno));
+                return -1;
+        }
+
+        if( mic_get_ndevices(dev_list, &amp;ndevices) != E_MIC_SUCCESS )
+        {
+                error_msg_start("Failed to get devices : %s: %s\n",
+                        mic_get_error_string(), strerror(errno));
+                return -1;
+        }
+
+
+        for (indx=0;indx &lt; ndevices; indx++)
+        {
+
+                if (mic_get_device_at_index(dev_list, card, &amp;indx) != E_MIC_SUCCESS)
+                {
+                        error_msg_start("Failed to get card at index %d: %s: %s\n",
+                        indx, mic_get_error_string(), strerror(errno));
+                        continue;
+                }
+
+                ret=mic_open_device(&amp;mdh, card);
+                if( ret != E_MIC_SUCCESS )
+                {
+                        error_msg_start("Failed to open device '%d': %s: %s\n",
+                        card, mic_get_error_string(), strerror(errno));
+                        continue;
+                }
+                ret = mic_get_version_info(mdh, &amp;version);
+                if( ret != E_MIC_SUCCESS )
+                {
+                        error_msg_start("Failed to get version info: %s: %s\n",
+                                mic_get_error_string(), strerror(errno));
+                        mic_close_device(mdh);
+                        continue;
+                }
+                log_msg_start("\n\tVersion\n");
+                mic_get_flash_version(version, str,&amp;size);
+                log_msg_start("\t\tFlash Version \t\t\t: %s\n", str);
+                mic_get_uos_version(version, str,&amp;size);
+                log_msg_start("\t\tCoprocessor OS Version \t\t\t: %s\n", str);
+                mic_free_version_info(version);
+                mic_get_silicon_sku(mdh, str, &amp;size);
+                log_msg_start("\t\tSKU \t\t\t\t: %s\n", str);
+                mic_get_serial_number(mdh, str, &amp;size);
+                log_msg_start("\t\tSerial Number \t\t\t: %s\n", str);
+                mic_get_flash_vendor_device(mdh, str, &amp;size);
+                log_msg_start("\t\tVendor device \t\t\t: %s\n", str);
+                mic_close_device(mdh);
+        }
+        mic_free_devices(dev_list);
+        return 0;
+}</tt></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_data_structures_list">Data Structures list</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Following are the list of some Data Structures used in micmgmt library.
+Please look up micmgmt documentation for details.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>mic_devices_list
+mic_device_mem
+mic_processor_info
+mic_cores_info
+smc_hw_rev_bits
+smc_hw_rev
+smc_fw_ver_bits
+smc_fw_ver
+smc_boot_loader_ver_bits
+smc_boot_loader_ver
+mic_version_info
+smc_die_temp_bits
+smc_die_temp
+mic_thermal_info
+mic_pci_config
+mic_flash_status_info
+mic_power_util_info
+mic_memory_util_info
+mic_core_util
+mic_flash_op
+mic_turbo_info</tt></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_micaccesssdk_api_list">MicAccessSDK API list</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Following are the list of API in micmgmt library. Please look up the
+micmgmt documentation for details.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>/* pci configuration */
+mic_get_pci_config
+mic_get_bus_number
+mic_get_device_number
+mic_get_vendor_id
+mic_get_device_id
+mic_get_revision_id
+mic_get_subsystem_id
+mic_get_link_speed
+mic_get_link_width
+mic_get_max_payload
+mic_get_max_readreq
+mic_free_pci_config
+/* Operations host platform */
+mic_get_devices
+mic_free_devices
+mic_get_ndevices
+mic_get_device_at_index
+/* Open close device and device type */
+mic_open_device
+mic_close_device
+mic_get_device_type
+const char *mic_get_device_name
+/* thermal info */
+mic_get_thermal_info
+mic_get_smc_hwrevision
+mic_get_smc_fwversion
+mic_is_smc_boot_loader_ver_supported
+mic_get_smc_boot_loader_ver
+mic_get_fsc_status
+mic_get_die_temp
+mic_get_fan_rpm
+mic_get_fan_pwm
+mic_free_thermal_info
+/* device memory info */
+mic_get_memory_info
+mic_get_memory_vendor
+mic_get_memory_revision
+mic_get_memory_density
+mic_get_memory_size
+mic_get_memory_speed
+mic_get_memory_type
+mic_get_memory_frequency
+mic_get_memory_voltage
+mic_get_ecc_mode
+mic_free_memory_info
+/* processor info */
+mic_get_processor_info
+mic_get_processor_model
+mic_get_processor_family
+mic_get_processor_type
+mic_get_processor_steppingid
+mic_get_processor_stepping
+mic_free_processor_info
+/* Coprocessor OS core info */
+mic_get_cores_info
+mic_get_cores_count
+mic_get_cores_voltage
+mic_get_cores_frequency
+mic_free_cores_info
+/* version info*/
+mic_get_version_info
+mic_get_uos_version
+mic_get_flash_version
+mic_get_fsc_strap
+mic_free_version_info
+/* silicon SKU */
+mic_get_silicon_sku
+/* serial number */
+mic_get_serial_number
+/* power utilization info */
+mic_get_power_utilization_info
+mic_get_total_power_readings_w0
+mic_get_total_power_sensor_sts_w0
+mic_get_total_power_readings_w1
+mic_get_total_power_sensor_sts_w1
+mic_get_inst_power_readings
+mic_get_inst_power_sensor_sts
+mic_get_max_inst_power_readings
+mic_get_max_inst_power_sensor_sts
+mic_get_pcie_power_readings
+mic_get_pcie_power_sensor_sts
+mic_get_c2x3_power_readings
+mic_get_c2x3_power_sensor_sts
+mic_get_c2x4_power_readings
+mic_get_c2x4_power_sensor_sts
+mic_get_vccp_power_readings
+mic_get_vccp_power_sensor_sts
+mic_get_vccp_current_readings
+mic_get_vccp_current_sensor_sts
+mic_get_vccp_voltage_readings
+mic_get_vccp_voltage_sensor_sts
+mic_get_vddg_power_readings
+mic_get_vddg_power_sensor_sts
+mic_get_vddg_current_readings
+mic_get_vddg_current_sensor_sts
+mic_get_vddg_voltage_readings
+mic_get_vddg_voltage_sensor_sts
+mic_get_vddq_power_readings
+mic_get_vddq_power_sensor_sts
+mic_get_vddq_current_readings
+mic_get_vddq_current_sensor_sts
+mic_get_vddq_voltage_readings
+mic_get_vddq_voltage_sensor_sts
+mic_free_power_utilization_info
+/* memory utilization */
+mic_get_memory_utilization_info
+mic_get_total_memory_size
+mic_get_available_memory_size
+mic_get_memory_buffers_size
+mic_free_memory_utilization_info
+/* core utilization apis */
+mic_alloc_core_util
+mic_update_core_util
+mic_get_idle_counters
+mic_get_nice_counters
+mic_get_sys_counters
+mic_get_user_counters
+mic_get_idle_sum
+mic_get_sys_sum
+mic_get_nice_sum
+mic_get_user_sum
+mic_get_jiffy_counter
+mic_get_num_cores
+mic_get_threads_core
+mic_free_core_util
+mic_get_led_alert
+mic_get_turbo_state_info
+mic_get_turbo_state
+mic_get_turbo_state_valid
+mic_free_turbo_info
+/* Error handling */
+mic_get_error_string
+mic_clear_error_string
+/* Maintenance mode start/stop */
+mic_enter_maint_mode
+mic_leave_maint_mode
+mic_in_maint_mode
+mic_in_ready_state
+mic_get_post_code
+/* Flash operations */
+mic_flash_size
+mic_flash_active_offs
+mic_flash_update_start
+mic_flash_update_done
+mic_flash_read_start
+mic_flash_read_done
+mic_get_flash_status_info
+mic_get_progress
+mic_get_status
+mic_get_ext_status
+mic_free_flash_status_info
+mic_flash_version
+mic_get_flash_vendor_device</tt></pre>
+</div></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_intel_corporation_proprietary_information">INTEL CORPORATION PROPRIETARY INFORMATION</h2>
+<div class="sectionbody">
+<div class="listingblock">
+<div class="content">
+<pre><tt>Copyright 2013-2015 Intel Corporation. All Rights Reserved.
+
+Intel makes no warranty of any kind regarding this code. This code is
+licensed on an "AS IS" basis and Intel will not provide any support,
+assistance, installation, training,  or other services. Intel may not
+provide any updates, enhancements or extensions to this code. Intel
+specifically disclaims any warranty of merchantability, non-infringement,
+fitness for any particular purpose, or any other warranty. Intel disclaims
+all liability, including liability for infringement of any proprietary
+rights, relating to use of the code. No license, express or implied, by
+estoppel or otherwise, to any intellectual property rights is granted
+herein.
+
+Designers must not rely on the absence or characteristics of any features or
+instructions marked "reserved" or "undefined". Intel reserves
+these for future definition and shall have no responsibility whatsoever for
+conflicts or incompatibilities arising from future changes to them.</tt></pre>
+</div></div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2015-03-01 15:10:00 UTC
+</div>
+</div>
+</body>
+</html>

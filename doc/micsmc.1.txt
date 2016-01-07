@@ -1,0 +1,341 @@
+// Copyright 2010-2013 Intel Corporation.
+//
+// This library is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, version 2.1.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// Disclaimer: The codes contained in these modules may be specific
+// to the Intel Software Development Platform codenamed Knights Ferry,
+// and the Intel product codenamed Knights Corner, and are not backward
+// compatible with other Intel products. Additionally, Intel will NOT
+// support the codes or instruction set in future products.
+//
+// Intel offers no warranty of any kind regarding the code. This code is
+// licensed on an "AS IS" basis and Intel is not obligated to provide
+// any support, assistance, installation, training, or other services
+// of any kind. Intel is also not obligated to provide any updates,
+// enhancements or extensions. Intel specifically disclaims any warranty
+// of merchantability, non-infringement, fitness for any particular
+// purpose, and any other warranty.
+//
+// Further, Intel disclaims all liability of any kind, including but
+// not limited to liability for infringement of any proprietary rights,
+// relating to the use of the code, even if Intel is notified of the
+// possibility of such liability. Except as expressly stated in an Intel
+// license agreement provided with this code and agreed upon with Intel,
+// no license, express or implied, by estoppel or otherwise, to any
+// intellectual property rights is granted herein.
+
+MICSMC(1)
+=========
+
+
+NAME
+----
+micsmc - Provides a GUI to perform many tasks related to Intel(R) Xeon Phi(TM)
+coprocessors (also known as Many Integrated Core or MIC).  The available tasks
+include retrieving device and driver info, and monitoring device performance,
+temperatures, and core usage.
+
+SYNOPSIS
+--------
+*micsmc* ['OPTIONS']
+
+////
+This is an asciiDoc formatted file, used to create manpage entries for the micsmc utility.
+In order for a2x to correctly convert this file into man-page format, there can not be
+anything other than:
+TITLE
+NAME
+SYNOPSIS
+as the first three sections of this file.  (That's why the comments have been placed
+here.)
+
+In order to convert this file into man-page format (ie. a file that can be read by 'man')
+run the following command:
+
+a2x --doctype manpage --format manpage <fileName>
+
+where <fileName> is the name of this file (it should be micsmc.1.txt).
+////
+
+DESCRIPTION
+-----------
+Intel(R) Xeon Phi(TM) Coprocessor Platform Status Panel (*micsmc(1)*) is a
+graphical tool designed to facilitate the administration of Intel(R) Xeon Phi(TM)
+coprocessors (also referred to in this document as MIC devices or MIC cards).
+*micsmc(1)* can function in two modes: GUI mode and command-line (CLI) mode.
+GUI mode provides continuously updated information regarding MIC core utilization,
+core temperature, memory usage, and power usage statistics.  CLI mode produces
+similar information, but is a one-shot operation which allows for use in
+scripting applications.
+
+By design, micsmc operates on all cards in the system.  GUI mode provides both
+system-level and per-card views, while CLI mode always operates on all cards.
+
+*micsmc(1)* can also be used to perform more advanced functions:
+viewing error logs, monitoring and connecting to MIC devices, viewing/rotating
+logs, and changing individual card settings such as enabling ECC, power states,
+and Turbo Modes on K1OM devices.
+
+For more information regarding the usage of *micsmc(1)*, please refer to the
+Platform Status Panel User Guide, which can be found at "/usr/share/doc/micmgmt"
+or by running *micsmc --help*.
+
+*micsmc(1)* is based in part on the work of the Qwt project (http://qwt.sf.net)
+
+
+OPTIONS
+-------
+When invoked without arguments, *micsmc(1)* will run in GUI mode.  GUI mode
+provides real-time monitoring of all detected Intel(R) Xeon Phi(TM) coprocessors
+through a graphical interface.  Additionally, *micsmc(1)* can be invoked in
+command-line mode using any of the arguments below:
+
+*-a*, *--all* [[device] <device_list>] ::
+    Displays all/selected device status data. Equivalent to: -i -t -f -m -c.
+
+*-c*, *--cores* [[device] <device_list>] ::
+    Displays the average and per core utilization levels for all/selected
+    devices.
+
+*-f*, *--freq* [[device] <device_list>] ::
+    Displays the clock frequency and power levels for all/selected devices.
+
+*-i*, *--info* [[device] <device_list>] ::
+    Displays general system information for all/selected devices.
+
+*-l*, *--lost* ::
+    Displays all Intel(R) Xeon Phi(TM) Coprocessors in the system and whether
+    they are currently in the Lost Node condition.
+
+*--online* ::
+    Displays all Intel(R) Xeon Phi(TM) Coprocessors in the system that are
+    currently online.
+
+*--offline* ::
+    Displays all Intel(R) Xeon Phi(TM) Coprocessors in the system that are
+    currently offline, lost, or otherwise unavailable.
+
+*-m*, *--mem* [[device] <device_list>] ::
+    Displays the memory utilization data for all/selected devices.
+
+*-t*, *--temp* [[device] <device_list>] ::
+    Displays the temperature levels for all/selected devices.
+
+*--ecc* [status | enable | disable] [[device] <device_list>] ::
+    Enables, disables or displays the ECC Mode for all/selected devices.
+    Optional arguments: :::
+        'enable' :::: enables ECC Mode
+        'disable' :::: disables ECC Mode
+        'status' :::: displays the ECC Mode
+    :: *NOTE:* If no arguments are provided, status is displayed.
+
+*--turbo* [status | enable | disable] [[device] <device_list>] ::
+    Enables, disables or displays the Turbo Mode for all/selected devices.
+    Optional arguments: :::
+        'enable' :::: enables Turbo Mode
+        'disable' :::: disables Turbo Mode
+        'status' :::: displays Turbo Mode status
+    :: *NOTE:* If no arguments are provided, status is displayed.
+
+*--led* [status | enable | disable] [[device] <device_list>] ::
+    Enables, disables or displays the LED Alert for all/selected devices.
+    Optional arguments: :::
+        'enable' :::: enables LED Alert
+        'disable' :::: disables LED Alert
+        'status' :::: displays LED Alert status
+    :: *NOTE:* If no arguments are provided, status is displayed.
+
+*--pthrottle* [[device] <device_list>] ::
+    Displays the Power Throttle State for all/selected devices.
+
+*--tthrottle* [[device] <device_list>] ::
+    Displays the Thermal Throttle State for all/selected devices.
+
+*--pwrenable* [cpufreq | corec6 | pc3 | pc6 | all] [[device] <device_list>] ::
+    Enables/disables the Power Management Features for all/selected devices.
+    Optional arguments: :::
+        'cpufreq' :::: enables the cpufreq power management feature
+        'corec6' :::: enables the corec6 power management feature
+        'pc3' :::: enables the pc3 power management feature
+        'pc6' :::: enables the pc6 power management feature
+        'all' :::: enables all four power management features
+    :: *NOTE:* Each feature not specified will automatically be disabled. If no
+       features are specified, then all Power Management Features are disabled.
+
+*--pwrstatus* [[device] <device_list>] ::
+    Displays the Power Management Feature status for all/selected devices.
+
+*--timeout* <value> ::
+    Sets the sub-process timeout value for the current invocation. Affects only
+    command option(s) requiring sub-process execution.  Required argument: :::
+        'value' :::: integer timeout value in seconds.
+
+*--verbose* ::
+    Request verbose output.
+    :: *NOTE:* At the moment this only applies to the *--ecc* option.
+
+*-h*, *--help* [<options_list>] ::
+    Displays full/selected usage information and then exits.
+
+*-v*, *--version* ::
+    Displays the tool version and then exits.
+
+Common Argument: [[device] device_list] ::
+    Specifies the device name arguments for a given command option. The
+    'device_list' specifies one or more 'micN' values where 'N' is the device
+    number: 'mic2 mic5 ...' When no device names are specified, the option
+    operates on all devices in the system.
+
+EXAMPLES
+--------
+//The equals signs auto create 'Example n.' in the manpage output
+.Starting the control panel
+=========
+The control panel is started in GUI mode by simply running *micsmc(1)* with no
+arguments. The system must have a valid X-server. The example below will start
+micsmc in the background, leaving the terminal available for other operations.
+....
+$ micsmc &
+....
+======
+//End Ex1
+
+.Displaying memory status for all cards
+====
+The *micsmc(1)* GUI displays Intel(R) Xeon Phi(TM) coprocessor card and overall
+system memory usage continuously. Viewing the coprocessor memory usage via the
+command-line is shown below.
+....
+$ micsmc -m
+
+mic0 (mem):
+   Free Memory: ............. 5483.34 MB
+   Total Memory: ............ 5740.85 MB
+   Memory Usage: ............ 257.51 MB
+
+....
+====
+//End Ex2
+
+[[enable_ecc_example]]
+.Enabling ECC mode
+====
+K1OM devices have ECC mode available, which can be statused, enabled, or
+disabled through the *micsmc(1)* GUI or command line.  Enabling ECC via the
+command-line is shown below. For enabling ECC via the GUI, see the Platform
+Status Panel User Guide, located at "/usr/share/doc/micmgmt".
+
+In order to change the status of ECC mode, the devices must be in either the
+offline or ready state. To place the available devices in the ready state, run
+the following as the root user:
+....
+# micctrl -r
+# micctrl -w
+mic0: ready
+mic1: ready
+mic2: ready
+
+....
+Now that the devices are in the ready state, you may proceed with
+enabling/disabling ECC mode.
+....
+$ micsmc --ecc enable mic0, mic1, mic2
+Information: enabling ECC on devices: mic0, mic1, mic2...
+
+Information: 1 of 3 complete
+Information: 2 of 3 complete
+Information: 3 of 3 complete
+
+Status: mic0: ECC enabled successfully
+Status: mic1: ECC enabled successfully
+Status: mic2: ECC enabled successfully
+
+Information: you must restart your Intel(R) Xeon Phi(TM) Coprocessor(s) now for
+the ECC mode changes to take effect
+
+....
+Use the *--verbose* flag to request verbose output.
+....
+
+$ micsmc --ecc enable mic0, mic1, mic2 --verbose
+
+Information: enabling ECC on devices: mic0, mic1, mic2...
+
+Status: mic0: enabling ECC...
+Status: mic1: putting device in maintenance mode...
+Status: mic2: putting device in maintenance mode...
+
+Status: mic0: resetting to 'ready' state
+Status: mic1: resetting to 'ready' state
+Status: mic2: enabling ECC...
+
+Status: mic0: resetting to 'ready' state
+Status: mic1: resetting to 'ready' state
+Status: mic2: resetting to 'ready' state
+
+Status: mic0: resetting to 'ready' state
+Status: mic1: resetting to 'ready' state
+Status: mic2: resetting to 'ready' state
+
+Status: mic0: resetting to 'ready' state
+Status: mic1: resetting to 'ready' state
+Status: mic2: resetting to 'ready' state
+
+Status: mic0: ECC enabled successfully
+Status: mic1: ECC enabled successfully
+Status: mic2: ECC enabled successfully
+
+Information: you must restart your Intel(R) Xeon Phi(TM) Coprocessor(s) now for
+the ECC mode changes to take effect
+
+....
+To return the devices to the online state after enabling/disabling ECC mode, run
+the following as the root user:
+....
+# micctrl -b
+# micctrl -w
+mic0: online
+mic1: online
+mic2: online
+
+....
+====
+//End Ex3
+
+BUGS
+----
+A section for known bugs, and possible workarounds: ::
+  No bugs listed so far.
+
+
+AUTHOR
+------
+*micsmc(1)* was written by Intel for use with Intel(R) Xeon Phi(TM) coprocessors
+
+
+RESOURCES
+---------
+A list of other useful resources: ::
+  The Platform Status Panel User Guide is available in all supported languages,
+  in PDF and HTML formats, at: "/usr/share/doc/micmgmt".
+
+
+*micsmc(1)* is based in part on the work of the Qwt project: :::
+       (http://qwt.sf.net)
+
+
+COPYRIGHT
+---------
+Copyright 2011-2015 Intel Corporation. All Rights Reserved.
+
+
+SEE ALSO
+--------
+*mpssflash(1)*, *mpssinfo(1)*, *micinfo(1)*, *micflash(1)*, *miccheck(1)*

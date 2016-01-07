@@ -1,0 +1,610 @@
+// Copyright 2010-2013 Intel Corporation.
+//
+// This library is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, version 2.1.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// Disclaimer: The codes contained in these modules may be specific
+// to the Intel Software Development Platform codenamed Knights Ferry,
+// and the Intel product codenamed Knights Corner, and are not backward
+// compatible with other Intel products. Additionally, Intel will NOT
+// support the codes or instruction set in future products.
+//
+// Intel offers no warranty of any kind regarding the code. This code is
+// licensed on an "AS IS" basis and Intel is not obligated to provide
+// any support, assistance, installation, training, or other services
+// of any kind. Intel is also not obligated to provide any updates,
+// enhancements or extensions. Intel specifically disclaims any warranty
+// of merchantability, non-infringement, fitness for any particular
+// purpose, and any other warranty.
+//
+// Further, Intel disclaims all liability of any kind, including but
+// not limited to liability for infringement of any proprietary rights,
+// relating to the use of the code, even if Intel is notified of the
+// possibility of such liability. Except as expressly stated in an Intel
+// license agreement provided with this code and agreed upon with Intel,
+// no license, express or implied, by estoppel or otherwise, to any
+// intellectual property rights is granted herein.
+
+MICFLASH(1)
+===========
+
+NAME
+----
+micflash - A tool to update Flash memory and System Management Controller
+firmware on Intel(R) Xeon Phi(TM) coprocessors.
+
+SYNOPSIS
+--------
+*micflash* 'OPTIONS'
+
+////
+This is an asciiDoc formatted file, used to create manpage entries for the micflash utility.
+In order for a2x to correctly convert this file into man-page format, there can not be
+anything other than:
+TITLE
+NAME
+SYNOPSIS
+as the first three sections of this file.  (That's why the comments have been placed
+here.)
+
+In order to convert this file into man-page format (ie. a file that can be read by 'man')
+run the following command:
+
+a2x --doctype manpage --format manpage <fileName>
+
+where <fileName> is the name of this file (it should be micflash.1.txt).
+
+This file contains information that is for internal use only.  This information is
+excluded from the created manpage by default.  To include it, set ODM_TOOL_INTERNAL.
+////
+
+
+DESCRIPTION
+-----------
+ifdef::ODM_TOOL_INTERNAL[]
+This document describes the 'Intel Internal' version of *micflash(1)*, and *IS 
+NOT FOR EXTERNAL RELEASE*.
+
+
+endif::ODM_TOOL_INTERNAL[]
+*micflash* is a tool to query the state of flash memory on Intel(R) Xeon
+Phi(TM) coprocessors (also known as Many Integrated Core or MIC), and update its 
+contents as well as the firmware of onboard System Management Controller (SMC).
+
+*micflash -update* +
+
+Flash memory and SMC firmware contents may be modified by passing the *-update*
+argument to the command. This command must be run when the device is in the 
+ready state. The *micctrl* command may be used to put the device into the 
+ready state prior to issuing the update request:
+....
+# micctrl -r [device]
+# micctrl -w [device]
+mic0: ready
+....
+
+The action depends on the content of the image file that is passed with
+the *<path>* argument, or selected by the rules specified later in this 
+document. If the file contains two images (Flash and SMC firmware), then both 
+updates are attempted. Otherwise, only the available image is updated. Note that 
+the files are usually saved with *.rom* extension for Flash-only images, *.smc* 
+for SMC firmware, and *.rom.smc* for both.
+
+If *<path>* specifies a regular file, then that file is used for the update. If 
+a directory name is specified, then a compatible image from that directory is
+chosen. The files in the directory are sorted in reverse alphabetical order when
+searching for an image to use for update. If the *<path>* argument is not 
+specified, then a search for a compatible image is made in 
+*/usr/share/mpss/flash*.
+
+The *--device* argument may be used to specify a single device ID, a 
+comma-separated list of device IDs, or *all* to denote all MIC devices present 
+on the system. This option may be omitted on a single-card system, in which case 
+the only available device is used.
+
+By default, *micflash* outputs a line at the start of flash read, update, SMC
+update, and device reset. The *-v* option may be used to augment this behavior 
+with more verbose output that updates progress every 4 seconds. The default 
+output is ASCII-only. The *-silent* option may be used to suppress any output. 
+A zero exit-status signals a successful flash update operation.
+
+Use the *-log <logfile>* option with the *-silent* option to save the log in a 
+file while nothing is displayed on the screen.
+
+The *-vv* option may be used to display the output status with a rotating bar
+progress monitor.
+
+Note: The behavior of prompting for reboot at the end of a successful update is 
+now discontinued. The reason is that a flash update requires a cold boot, but a 
+warm-reboot may have been specified as a boot parameter. Instead, a message 
+reminding the user to perform a cold restart is displayed. This can be 
+suppressed by using the *-noreboot* option.
+
+For SMC firmware versions 1.7 and earlier, an SMC boot loader update is 
+necessary. Use the *-smcbootloader* option with the update command to update the 
+SMC boot loader, in addition to the SMC image.  If *-smcbootloader* is 
+specified on the command line of a flash update operation, then *micflash* 
+will first look for the highest compatible version of the SMC boot loader image 
+in the */usr/share/mpss/flash* directory.  If no such image is found, then the 
+operation will fail.  If the operation is successful, then *micflash* will 
+attempt to use one of the following (in order):
+
+. A compatible flash and SMC image (*.rom.smc* extension) in 
+*/usr/share/mpss/flash* if no path or file were specified in the update command
+. A compatible flash and SMC image in the directory specified in the update 
+command
+. The file specified in the update command after checking its compatibility
+
+Note that the compatibility check may be skipped to allow a user to perform an 
+SMC firmware upgrade alone (without flash upgrade), along with the SMC boot 
+loader modification.  However, the user should make sure the SMC image is 
+actually compatible with the device as there may be no way for *micflash* to 
+determine if the given image is compatible.
+
+If any of these operations fail, then the update will fail and the SMC boot 
+loader will not be modified.  Otherwise, the SMC boot loader will be modified 
+first, followed by an update of the flash and/or SMC images.
+
+*micflash -getversion* +
+
+This command may be used to display the flash firmware version that is currently 
+present on the installed device(s), or from an image file. When reading physical 
+flash, this command must be executed with the specified devices in the ready 
+state. In this case the device is first put into maintenance mode, the flash is 
+read, and finally reset back to the ready state.
+
+The default behavior is to output the flash version for each device as soon as 
+it is read. Use *-v* option to monitor progress as the flash device is read and 
+reset back to ready state.
+
+Use the *log <file>* option to save the operation log in a file.
+
+OPTIONS
+-------
+*-help* [-update|-getversion|-save|-devinfo|-compatible|-version]::
+  Describe usage of micflash.  If a topic is specified, describe only that 
+  topic, otherwise describe all topics.
+
+*-update* ['<path>'] [{-device|-d} '<device_id>'] [-v] [-vv] [-nodowngrade] [-noreboot] [-silent] [-log '<logfile>'] [-smcbootloader] ::
+  Update the Intel(R) Xeon Phi(TM) coprocessor flash with the given flash image file. +
+  '<path>' ::: If '<path>' refers to a regular file, then it is used as an image 
+                file. If a directory path is specified, then the program looks
+                for a compatible image inside that directory. If '<path>' is not
+                given, then /usr/share/mpss/flash is searched.
+  *-device,-d* '<device_id>'::: '<device_id>' gives the numeric ID of the
+                device on which the specified operation must be performed. If
+                this option is not specified, then a '<device_id>' of 0 is implied
+                on a single-card system, and an error is reported on multi-card
+                machines. A list of devices may be specified using comma- 
+                separated numeric values, e.g.: -device 0,3,0x5. 
+                A '<device_id>' of 'all' specifies all available devices.
+  *-v* ::: Show verbose status messages.
+  *-vv* ::: Display progress with a rotating-bar progress monitor.
+  *-nodowngrade* ::: Do not allow downgrade of the flash software.
+  *-noreboot* ::: Do not display reboot message at the end of successful update.
+  *-silent* ::: Suppress status messages while operation is in progress.
+                Errors are still reported.
+  *-log* '<logfile>'::: Specifies the name of the file used to log operation 
+                status.
+  *-smcbootloader* ::: Update the SMC boot loader in addition to the SMC image.
+                An SMC boot loader update is necessary for SMC firmware versions 
+                1.7 and earlier.
+
+*-getversion* {['<file>']|[{-device|-d} '<device_id>']} [-silent] [-log '<logfile>'] ::
+  Get the version of the flash image from the specified file, or from the specified 
+  device. + 
+  '<file>' ::: The name of the image file.
+  *-device,-d* '<device_id>'::: '<device_id>' gives the numeric ID of the
+                device on which the specified operation must be performed. If
+                this option is not specified, then a '<device_id>' of 0 is implied
+                on a single-card system, and an error is reported on multi-card
+                machines. A list of devices may be specified using comma- 
+                separated numeric values, e.g.: -device 0,3,0x5. 
+                A '<device_id>' of 'all' specifies all available devices.
+  *-silent* ::: Suppress status messages while operation is in progress.
+                Errors are still reported.
+  *-log* '<logfile>'::: Specifies the name of the file used to log operation 
+                status.
+
+*-save* '<file>' [{-device|-d} '<device_id>'] [-silent] [-log '<logfile>'] ::
+  Save the flash image from the given device into the specified file. +
+  '<file>' ::: The name of the file where the image should be saved.
+  *-device,-d* '<device_id>'::: '<device_id>' gives the numeric ID of the
+                device on which the specified operation must be performed. If
+                this option is not specified, then a '<device_id>' of 0 is implied
+                on a single-card system, and an error is reported on multi-card
+                machines. A list of devices may be specified using comma- 
+                separated numeric values, e.g.: -device 0,3,0x5. 
+                A '<device_id>' of 'all' specifies all available devices.
+  *-silent* ::: Suppress status messages while operation is in progress.
+                Errors are still reported.
+  *-log* '<logfile>'::: Specifies the name of the file used to log operation 
+                status.
+
+*-devinfo* [{-device|-d} '<device_id>'] [-silent] [-log '<logfile>'] ::
+  Get the flash device vendor information. +
+  *-device,-d* '<device_id>'::: '<device_id>' gives the numeric ID of the
+                device on which the specified operation must be performed. If
+                this option is not specified, then a '<device_id>' of 0 is implied
+                on a single-card system, and an error is reported on multi-card
+                machines. A list of devices may be specified using comma- 
+                separated numeric values, e.g.: -device 0,3,0x5. 
+                A '<device_id>' of 'all' specifies all available devices.
+  *-silent* ::: Suppress status messages while operation is in progress.
+                Errors are still reported.
+  *-log* '<logfile>'::: Specifies the name of the file used to log operation 
+                status.
+
+*-compatible* '<file>' [{-device|-d} '<device_id>'] [-silent] [-log '<logfile>'] ::
+  Check if the specified flash image is compatible with the given device. +
+  '<file>' ::: The name of the image file to check for compatibility.
+  *-device,-d* '<device_id>'::: '<device_id>' gives the numeric ID of the
+                device on which the specified operation must be performed. If
+                this option is not specified, then a '<device_id>' of 0 is implied
+                on a single-card system, and an error is reported on multi-card
+                machines. A list of devices may be specified using comma- 
+                separated numeric values, e.g.: -device 0,3,0x5. 
+                A '<device_id>' of 'all' specifies all available devices.
+  *-silent* ::: Suppress status messages while operation is in progress.
+                Errors are still reported.
+  *-log* '<logfile>'::: Specifies the name of the file used to log operation 
+                status.
+
+*-version*
+  Display the tool version.
+
+EXAMPLES
+--------
+//The equals signs auto create 'Example n.' in the manpage output.
+.Updating the flash
+======
+......
+# micflash -update -device all 
+
+No image path specified - Searching: /usr/share/mpss/flash 
+
+mic0: Using: /usr/share/mpss/flash/EXT_HP2_B0_0375-02.rom.smc 
+
+mic1: Using: /usr/share/mpss/flash/EXT_HP2_B0_0375-02.rom.smc 
+
+mic0: Flash read started... 
+ 
+mic1: Flash read started... 
+ 
+mic0: Read done 
+
+mic0: Flash update started... 
+
+mic1: Read done 
+
+mic1: Flash update started... 
+
+mic0: Flash update done 
+
+mic0: SMC update started... 
+
+mic1: Flash update done 
+
+mic1: SMC update started... 
+
+mic0: SMC update done 
+
+mic0: Resetting... 
+
+mic1: Update done 
+
+mic1: Resetting... 
+
+mic0: Exit status: 0 
+
+mic1: Exit status: 0 
+
+Please restart host for flash changes to take effect 
+
+#
+......
+For progress updates, use the *-v* option: 
+......
+# ./micflash -update /usr/share/mpss/flash/EXT_HP2_B0_0375-02.rom.smc -device all -v 
+
+mic0: Reading flash 
+
+mic1: Reading flash 
+
+
+mic0: Flash update successful: Updating SMC: 3% 
+
+mic1: Flash update successful: Updating SMC: 3% 
+
+
+mic0: Flash update successful: Updating SMC: 19% 
+
+mic1: Flash update successful: Updating SMC: 19% 
+
+
+mic0: Flash update successful: Updating SMC: 35% 
+
+mic1: Flash update successful: Updating SMC: 35% 
+
+
+mic0: Flash update successful: Updating SMC: 51% 
+
+mic1: Flash update successful: Updating SMC: 51% 
+
+
+mic0: Flash update successful: Updating SMC: 67% 
+
+mic1: Flash update successful: Updating SMC: 67% 
+
+
+mic0: Flash update successful: Updating SMC: 83% 
+
+mic1: Flash update successful: Updating SMC: 83% 
+
+
+mic0: Flash update successful: Updating SMC: 100% 
+
+mic1: Flash update successful: Updating SMC: 100% 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3C 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3d 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 3E 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 3E 
+
+
+mic0: Resetting: Flash update successful: SMC update successful: POST code: 10 
+
+mic1: Resetting: Flash update successful: SMC update successful: POST code: 09 
+
+
+mic0: Done 
+
+mic1: Done 
+
+Please restart host for flash changes to take effect 
+
+#
+......
+=====
+//End Ex. 1
+
+.Getting version information
+=====
+......
+# micflash -getversion -device all 
+
+mic0: Version: 2.1.02.0375 
+
+mic1: Version: 2.1.02.0375 
+
+#
+......
+For progress updates, use the *-v* option: 
+......
+# micflash -getversion -device all -v 
+
+mic0: Reading flash 
+
+mic1: Reading flash 
+
+mic0: Version: 2.1.02.0375 
+
+mic1: Version: 2.1.02.0375 
+
+mic0: Resetting: POST code: 3C 
+
+mic1: Resetting: POST code: 3C 
+
+
+mic0: Resetting: POST code: 3C 
+
+mic1: Resetting: POST code: 3C 
+
+mic0: Resetting: POST code: 3C 
+
+mic1: Resetting: POST code: 3C 
+
+
+mic0: Resetting: POST code: 3C 
+
+mic1: Resetting: POST code: 3C 
+
+
+mic0: Resetting: POST code: 3C 
+
+mic1: Resetting: POST code: 3C 
+
+
+mic0: Resetting: POST code: 3C 
+
+mic1: Resetting: POST code: 3C 
+
+
+mic0: Resetting: POST code: 3d 
+
+mic1: Resetting: POST code: 3C 
+
+
+mic0: Resetting: POST code: 3d 
+
+mic1: Resetting: POST code: 3d 
+
+
+mic0: Resetting: POST code: 3d 
+
+mic1: Resetting: POST code: 3d 
+
+
+mic0: Resetting: POST code: 3d 
+
+mic1: Resetting: POST code: 3d 
+
+
+mic0: Resetting: POST code: 3d 
+
+mic1: Resetting: POST code: 3d 
+
+
+mic0: Resetting: POST code: 3d 
+
+mic1: Resetting: POST code: 3d 
+
+
+mic0: Resetting: POST code: 3d 
+
+mic1: Resetting: POST code: 3d 
+
+
+mic0: Resetting: POST code: 3d 
+
+mic1: Resetting: POST code: 3d 
+
+
+mic0: Resetting: POST code: 3E 
+
+mic1: Resetting: POST code: 3E 
+
+
+mic0: Resetting: POST code: 10 
+
+mic1: Resetting: POST code: 09 
+
+
+mic0: Done 
+
+mic1: Done 
+
+#
+......
+......
+# micflash -getversion /usr/share/mpss/flash/EXT_HP2_A0_0375-02.rom.smc 
+
+2.1.02.0375
+
+#
+......
+
+=====
+//End Ex. 2
+
+EXIT STATUS
+-----------
+*micflash* exits with status 0 if the operation succeeds on all specified 
+devices, otherwise it returns with a non-zero status.
+
+PERMISSIONS
+-----------
+Flash operations require super-user privileges.
+
+CAVEATS
+-------
+Even when *-silent* is specified, any error encountered before this option is
+processed may still be displayed.
+
+The *-vv* option uses *clear(1)* command to clear the screen.
+
+For SMC firmware versions 1.7 and earlier, an SMC boot loader update is 
+necessary. Use the *-smcbootloader* option with the update command to update the 
+SMC boot loader in addition to the SMC image.
+
+BUGS
+----
+A section for known bugs, and possible workarounds: ::
+  No bugs listed so far.
+
+
+AUTHOR
+------
+*micflash(1)* was written by Intel for use with Intel(R) Xeon Phi(TM) coprocessors
+
+
+RESOURCES
+---------
+A list of other useful resources: ::
+  None so far.
+
+
+COPYRIGHT
+---------
+Copyright 2011-2015 Intel Corporation. All Rights Reserved.
+
+
+SEE ALSO
+--------
+*micinfo(1)*, *micsmc(1)*, *miccheck(1)*, *mpssflash(1)*, *mpssinfo(1)*
+

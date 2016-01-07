@@ -1,0 +1,287 @@
+// Copyright 2010-2013 Intel Corporation.
+//
+// This library is free software; you can redistribute it and/or modify it
+// under the terms of the GNU Lesser General Public License as published
+// by the Free Software Foundation, version 2.1.
+//
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+// Lesser General Public License for more details.
+//
+// Disclaimer: The codes contained in these modules may be specific
+// to the Intel Software Development Platform codenamed Knights Ferry,
+// and the Intel product codenamed Knights Corner, and are not backward
+// compatible with other Intel products. Additionally, Intel will NOT
+// support the codes or instruction set in future products.
+//
+// Intel offers no warranty of any kind regarding the code. This code is
+// licensed on an "AS IS" basis and Intel is not obligated to provide
+// any support, assistance, installation, training, or other services
+// of any kind. Intel is also not obligated to provide any updates,
+// enhancements or extensions. Intel specifically disclaims any warranty
+// of merchantability, non-infringement, fitness for any particular
+// purpose, and any other warranty.
+//
+// Further, Intel disclaims all liability of any kind, including but
+// not limited to liability for infringement of any proprietary rights,
+// relating to the use of the code, even if Intel is notified of the
+// possibility of such liability. Except as expressly stated in an Intel
+// license agreement provided with this code and agreed upon with Intel,
+// no license, express or implied, by estoppel or otherwise, to any
+// intellectual property rights is granted herein.
+
+MICINFO(1)
+===========
+
+NAME
+----
+
+micinfo - Provide information about current Intel(R) Xeon Phi(TM) coprocessor 
+hardware and driver.
+
+
+SYNOPSIS
+--------
+
+*micinfo* ['OPTIONS']
+
+////
+This is a comment block, and will not appear in the generated man pages.
+This is an asciiDoc formatted file, used to create manpage entries for micinfo.
+In order for a2x to correctly convert this file into man-page format, there can not be
+anything other than:
+
+TITLE
+NAME
+SYNOPSIS
+as the first three sections of this file.  (That's why the comments have been placed
+here.)
+
+In order to convert this file into man-page format (ie. a file that can be read by 'man')
+run the following command:
+
+a2x --doctype manpage --format manpage <fileName>
+
+where <fileName> is the name of this file (it should be micinfo.1.txt).
+////
+
+
+DESCRIPTION
+-----------
+
+The *micinfo(1)* command displays information about the Intel(R) Xeon Phi(TM) 
+coprocessors installed on the system along with relevant details about the
+Coprocessor OS and the driver.  
+
+NOTE: Certain device information will be unavailable when running *micinfo(1)* 
+as a non-root user.
+
+
+OPTIONS
+-------
+
+*-help*::
+  Display command help.
+
+*-listDevices*::
+  List all Intel(R) Xeon Phi(TM) coprocessors detected.
+
+*-deviceInfo* '<deviceNum>' [*-group* '<groupname>']::
+  Display information about the user-specified coprocessor (determined by 
+  '<deviceNum>').  To display information about all the available coprocessors,
+  'all' may be specified in place of the coprocessor device number.  The user 
+  may additionally specify the type of information with the *-group* option.
+
+*-group* '<groupname>'::
+  Allows printing only a subset of the coprocessor information.  If the *-group* 
+  option is not given, all groups are displayed.  Note: if no coprocessor 
+  device number is specified, it will display the requested group information 
+  for all the available coprocessors.
+  Valid values for '<groupname>' are: :::
+    'Version'  :::: Show Flash and Coprocessor OS versions. Show SMC boot loader version 
+                (SMC versions 1.9 and later). For earlier SMC versions, the 
+                SMC boot loader version is reported as "Not Available".
+    'Board'    :::: Show Intel(R) Xeon Phi(TM) coprocessor related information
+    'Core'     :::: Show number of cores, voltage and frequency
+    'Thermal'  :::: Show fan and thermal related data
+    'GDDR'     :::: Show coprocessor memory related information
+    'All'      :::: Show all groups (default when group option is not specified)
+
+  :: All groups for all coprocessors are displayed if *micinfo(1)* is run  
+     without any arguments.
+
+*-version*
+  Display the tool version.
+
+Prefixes are accepted for options and group names.  For example, the following
+commands are valid:
+
+[verse]
+micinfo -dev 0
+micinfo -dev 0 -group ver
+
+EXAMPLES
+--------
+
+// Anything between matching ==== will be included in the man page output as an example.
+// The man page generator auto-labels (and cross-references) all of the examples.
+
+.Listing Devices
+=======
+
+The following will print all Intel(R) Xeon Phi(TM) coprocessors detected on the 
+system, providing the device ID, PCI bus number, PCI device number and 
+hardware ID of each coprocessor.  
+
+Below is example output taken from a system with two coprocessors installed:
+//The text below will show in the man page exactly how it is seen here
+
+......
+$ micinfo -listDevices
+
+List of Available Devices
+
+deviceId | bus# | pciDev# | hardwareId
+---------|------|---------|-----------
+       0 |   83 |       0 |   225D8086
+       1 |   84 |       0 |   225C8086
+--------------------------------------
+
+......
+=====
+
+//End Ex. 1
+.Print all info groups for a device
+====
+
+The following will print all info for the mic1 coprocessor present on the system:
+
+....
+$ micinfo -device 1
+
+        System Info
+                HOST OS                  : Linux
+                OS Version               : 2.6.32-279.el6.x86_64
+                Driver Version           : 6720-2
+                MPSS Version             : 2.1.6720-2
+                Host Physical Memory     : 32433 MB
+
+Device No: 1, Device Name: mic1
+
+        Version
+                Flash Version            : 2.1.06.0375
+                SMC Firmware Version     : 1.10.4377
+                SMC Boot Loader Version  : 1.8.4326
+                Coprocessor OS Version   : 2.6.38.8-g0e2d2b6
+                Device Serial Number     : ADKC22300129
+
+        Board
+                Vendor ID                : 0x8086
+                Device ID                : 0x225c
+                Subsystem ID             : 0x2500
+                Coprocessor Stepping ID  : 1
+                PCIe Width               : x16
+                PCIe Speed               : 5 GT/s
+                PCIe Max payload size    : 256 bytes
+                PCIe Max read req size   : 4096 bytes
+                Coprocessor Model        : 0x01
+                Coprocessor Model Ext    : 0x00
+                Coprocessor Type         : 0x00
+                Coprocessor Family       : 0x0b
+                Coprocessor Family Ext   : 0x00
+                Coprocessor Stepping     : B0
+                Board SKU                : ES2-P/A/X 1750
+                ECC Mode                 : Enabled
+                SMC HW Revision          : Product 300W Passive CS
+
+        Cores
+                Total No of Active Cores : 61
+                Voltage                  : 914000 uV
+                Frequency                : 1090909 kHz
+
+        Thermal
+                Fan Speed Control        : N/A
+                Fan RPM                  : N/A
+                Fan PWM                  : N/A
+                Die Temp                 : 45 C
+
+        GDDR
+                GDDR Vendor              : Elpida
+                GDDR Version             : 0x1
+                GDDR Density             : 2048 Mb
+                GDDR Size                : 7936 MB
+                GDDR Technology          : GDDR5 
+                GDDR Speed               : 5.500000 GT/s 
+                GDDR Frequency           : 2750000 kHz
+                GDDR Voltage             : 1501000 uV
+
+....
+====
+
+//End Ex 2.
+.Limiting output
+====
+
+The output can be limited to a specific set of information by specifying the 
+*-group* argument, followed by the desired info group to be printed.  The 
+following example prints only the "Version" information of the various flash 
+images on a coprocessor:
+
+....
+$ micinfo -deviceInfo 1 -group Version
+
+
+        System Info
+                HOST OS                  : Linux
+                OS Version               : 2.6.32-279.el6.x86_64
+                Driver Version           : 6720-2
+                MPSS Version             : 2.1.6720-2
+                Host Physical Memory     : 32433 MB
+
+Device No: 1, Device Name: mic1
+
+        Version
+                Flash Version            : 2.1.06.0375
+                SMC Firmware Version     : 1.10.4377
+                SMC Boot Loader Version  : 1.8.4326
+                Coprocessor OS Version   : 2.6.38.8-g0e2d2b6
+                Device Serial Number     : ADKC22300129
+
+....
+====
+
+//End Ex.3
+
+
+BUGS
+----
+
+A section for known bugs, and possible workarounds: ::
+  No bugs listed so far.
+
+
+AUTHOR
+------
+
+*micinfo(1)* was written by Intel for use with Intel(R) Xeon Phi(TM) coprocessors
+
+
+RESOURCES
+---------
+
+A list of other useful resources: ::
+  None so far.
+
+
+COPYRIGHT
+---------
+
+Copyright 2011-2015 Intel Corporation. All Rights Reserved.
+
+
+SEE ALSO
+--------
+
+*mpssinfo(1)*, *mpssflash(1)*, *micflash(1)*, *micsmc(1)*, *miccheck(1)*
+
