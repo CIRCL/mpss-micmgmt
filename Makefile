@@ -34,12 +34,12 @@
 REPOROOTDIR ?= $(CURDIR)
 include $(REPOROOTDIR)/mk/definitions.mk
 
-all: mpssinfo mpssflash micsmc docs_tools
+all: mpssinfo mpssflash micsmc
 
 all_oem: micconfig docs_tools_oem
 
 install: install_mpssinfo install_mpssflash install_micsmc \
-	install_mpssdebug install_doc_tools
+	install_mpssdebug
 
 install_oem: install_micconfig install_doc_tools_oem
 
